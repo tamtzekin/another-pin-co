@@ -1,0 +1,14 @@
+<h1>Thanks for your order, <%= @order.first_name %> </h1>
+<p>We've got your order, and we're working on getting it to you right now.</p.>
+
+<h2>Confirmation - your order:</h2>
+<p>
+    <% @order.order_items.each do |i| %>
+        <%= i.product.title %>
+        <%= image_tag i.product.image_1.thumb.url %>
+    <% end %>
+</p>
+
+<p>
+    <%= link_to "Back to home", root_path %>
+</p>

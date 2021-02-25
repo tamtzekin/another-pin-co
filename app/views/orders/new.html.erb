@@ -1,0 +1,36 @@
+<h1>Checkout</h1>
+
+<p>
+    Total items: <%= @order.order_items.size %>
+</p>
+
+
+<p>
+Your items:
+    <% @order.order_items.each do |i| %>
+        <p>
+            <%= i.product.title %>
+        </p>
+        
+        <p>
+            <%= image_tag i.product.image_1.thumb.url %>
+        </p>
+    <% end %>
+</p>
+
+
+<%= simple_form_for @order do |f| %>
+    <%= f.input :first_name %>
+    <%= f.input :last_name %>
+    
+    <%= f.input :email %>
+    
+    <%= f.input :country %>
+    <%= f.input :address_1 %>
+    <%= f.input :address_2 %>
+    <%= f.input :city %>
+    <%= f.input :postcode %>
+
+    <%= f.button :submit, "Submit order" %>
+
+<% end %>

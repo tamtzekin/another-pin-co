@@ -1,0 +1,71 @@
+<h2>Your cart</h2>
+
+<% if @current_cart.order_items.any? %>
+    <table>
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Price</th>
+                <th>Qty</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+        <% @current_cart.order_items.each do |i| %>
+            <tr>
+                <td>
+                    <%= image_tag i.product.image_1.thumb.url,  width: "125" %>                
+                    <%= i.product.title %>
+                </td>
+
+                <td>
+                    <%= number_to_currency i.product.price_in_dollars * i.quantity %>
+                </td>
+
+
+                <td>
+                    <%= simple_form_for [i.product, i] do |f| %>
+                        <%= f.input :quantity, label: false %>
+
+                        <%= f.button :submit, "Update quantity" %>
+                    <% end %>
+                </td>
+                
+                <td>
+                <%# 
+                Go to the order_item inside the product
+                
+                In Routes, this is: 
+                    resources :products do 
+                        resources :order_items
+                    end 
+
+                product_order_item_path goes to the path
+                i.product refers to resources :products (name of the product)
+                i referes to resources :order_items (the name of the item itself)
+                and finally, a method of :delete
+
+                
+                %>
+                    <%= link_to "Remove", product_order_item_path(i.product, i), method: :delete %>
+                </td>
+            </tr>
+        <% end %>
+        </tbody>
+    </table>
+
+    <p>
+        Total: <%= number_to_currency @current_cart.total_price_in_dollars %>
+    </p>
+
+    <p>
+        <%= link_to "Continue to checkout", new_order_path %>
+    </p.>
+
+    <% else %>
+        <p class="empty-carty">
+            Your cart is empty.
+        </p>
+
+<% end %>
