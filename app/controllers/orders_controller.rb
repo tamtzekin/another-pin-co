@@ -22,11 +22,11 @@ class OrdersController < ApplicationController
         @order.add_from_cart(@current_cart)
 
         # if the order validates
-        if @order.save
+        if @order.save_and_charge
             # Resets the cart
-            # reset_session 
+            reset_session
             
-            # flash[:success] = "Order completed"
+            flash[:success] = "Order completed"
 
             # redirect to #show page for this @order
             redirect_to order_path(@order)
@@ -37,10 +37,10 @@ class OrdersController < ApplicationController
 
     end 
 
-
+    
     def form_params
         params.require(:order).permit(:first_name, :last_name, :email,
-        :country, :address_1, :address_2, :city, :postcode)
+        :country, :address_1, :address_2, :city, :postcode, :stripe_token)
     end 
 
 end

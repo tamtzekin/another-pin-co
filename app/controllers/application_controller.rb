@@ -6,7 +6,7 @@ class ApplicationController < ActionController::Base
     # access to views
     helper_method :current_cart
 
-    def current_cart
+    def current_cart    
         # if customer is on the site, give them a cart
         # if they have one, keep it
 

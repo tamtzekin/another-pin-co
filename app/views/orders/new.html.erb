@@ -31,6 +31,75 @@ Your items:
     <%= f.input :city %>
     <%= f.input :postcode %>
 
+    <div id="card-errors">
+        <!-- Stripe displays errors in here -->
+    </div>
+
+    <div id="card-element">
+        <!-- Stripe shows card element in here -->
+    </div>
+
     <%= f.button :submit, "Submit order" %>
 
 <% end %>
+
+
+<script>
+    // Create an instance of the Stripe object with your key
+    var stripe = Stripe("<%= Rails.application.credentials.stripe[Rails.env.to_sym][:stripe_public_key] %>")
+    
+    // Create an instance of Stripe's UI Elements
+    var elements = stripe.elements();
+
+    // Styles for the card Element
+    var styles = {
+        base: {
+            fontSize: '16px',
+            color: '#32325d',
+        },
+    };
+
+    // Create an instance of the card Element, style it
+    var card = elements.create("card", {style: styles, hidePostalCode: true});
+
+    // Mount it to the div 
+    card.mount("#card-element");
+
+    // When form is submitted, either create token or display errors
+    var form = document.getElementById('new_order');
+
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        stripe.createToken(card).then((result) => {
+            if (result.error) {
+            // Show error message
+            var errorElement = document.getElementById("card-errors");
+            errorElement.textContent = result.error.message;
+            
+            } else {
+                // Send token to the server
+                stripeTokenHandler(result.token);
+            }
+        });
+    });
+
+
+    var stripeTokenHandler = (token) => {
+        // Optional: Check if your token ID is printing
+        console.log(token.id);
+
+        // Insert the token ID into the form
+        var form = document.getElementById('new_order');
+
+        var hiddenInput = document.createElement('input');
+        hiddenInput.setAttribute('type', 'hidden');
+        hiddenInput.setAttribute('name', 'order[stripe_token]');
+        hiddenInput.setAttribute('value', token.id);
+        form.appendChild(hiddenInput);
+
+    // Submit the form
+    form.submit();
+    }
+    
+</script>
