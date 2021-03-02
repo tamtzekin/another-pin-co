@@ -26,7 +26,7 @@ class Order < ApplicationRecord
             Stripe.api_key = Rails.application.credentials.stripe[Rails.env.to_sym][:stripe_secret_key]
 
             # Make a charge
-            # :: is a namespace, refers always to Stripe
+            # :: is a namespace, refers to Stripe's own 'Charge'
             Stripe::Charge.create(
                 amount: self.total_price, 
                 currency: "usd",
@@ -39,8 +39,20 @@ class Order < ApplicationRecord
             
         else 
             false
-        end 
+        end
+
+
+    rescue Stripe::CardError => e
+        # Return error messages from Stripe in JSON
+        @message = e.json_body[:error][:message]
+
+        # self refers to this model, errors is built into Rails
+        self.errors.add(:stripe_token, @message)
+
+        # Return false to our controller
+        false
     end
+
 
 
     # get total price as var, for use on this controller
@@ -53,5 +65,16 @@ class Order < ApplicationRecord
 
         @total
     end
+
+    # Adds this function from cart.rb to order.rb model, so you can use it in your receipt
+    def total_price_in_dollars
+        @total = 0 
+
+        order_items.all.each do |i|
+            @total = @total + i.product.price_in_dollars * i.quantity
+        end 
+
+        return @total
+    end 
 
 end

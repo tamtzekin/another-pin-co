@@ -32,7 +32,11 @@ Your items:
     <%= f.input :postcode %>
 
     <div id="card-errors">
-        <!-- Stripe displays errors in here -->
+        <% @order.errors[:stripe_token] do |message| %>
+            <p class="error-message">
+                <%= message %>
+            </p>
+        <% end %>
     </div>
 
     <div id="card-element">
